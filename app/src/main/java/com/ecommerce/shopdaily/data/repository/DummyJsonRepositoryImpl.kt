@@ -1,0 +1,43 @@
+package com.ecommerce.shopdaily.data.repository
+
+import com.ecommerce.shopdaily.data.db.ShopDailyDao
+import com.ecommerce.shopdaily.data.db.entities.ProductEntity
+import com.ecommerce.shopdaily.data.db.entities.UserEntity
+import com.ecommerce.shopdaily.data.remote.DummyJsonService
+import com.ecommerce.shopdaily.data.remote.dto.category.CategoryDto
+import com.ecommerce.shopdaily.data.remote.dto.category.ProductCategoriesDto
+import com.ecommerce.shopdaily.data.remote.dto.login.UserDto
+import com.ecommerce.shopdaily.data.remote.dto.login.request.LoginRequestBody
+import com.ecommerce.shopdaily.domain.repository.DummyJsonRepository
+import retrofit2.Response
+
+class DummyJsonRepositoryImpl(
+    private val api: DummyJsonService,
+    private val dao: ShopDailyDao
+) : DummyJsonRepository {
+    override suspend fun login(username: String, password: String): Response<UserDto> = api.login(
+        LoginRequestBody(username, password)
+    )
+
+    override suspend fun getSavedUser(): List<UserEntity> = dao.getUser()
+
+    override suspend fun saveUser(user: UserEntity): Long = dao.saveUser(user)
+
+    override suspend fun getCategories(token: String): Response<List<ProductCategoriesDto>> =
+        api.getCategories(token)
+
+    override suspend fun getCategory(token: String, categoryId: String): Response<CategoryDto> =
+        api.getCategory(token, categoryId)
+
+    override suspend fun saveProductToFavorites(product: ProductEntity): Long =
+        dao.saveProductToFavorites(product)
+
+    override suspend fun getFavorites(): List<ProductEntity> = dao.getFavorites()
+
+    override suspend fun deleteFromFavorites(productId: Int, category: String) {
+        dao.deleteFromFavorites(productId, category)
+    }
+
+    override suspend fun getProducts(token: String, skip: Int): Response<CategoryDto> =
+        api.getProducts(token = token, skip = skip)
+}
